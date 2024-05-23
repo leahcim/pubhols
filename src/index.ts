@@ -20,7 +20,8 @@ export const main = async () => {
     .map((holiday) => buildCsvRow(holiday))
     .join("\n");
 
-  writeFile("holidays.csv", csv);
+  const csvHeader = "# Name, Date, Days until, Weekend";
+  writeFile("holidays.csv", csvHeader + "\n" + csv);
 };
 
 main();
