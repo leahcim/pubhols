@@ -1,44 +1,23 @@
-import { getHolidays } from "./getHolidays";
 import { writeFile } from "fs/promises";
-
-type HolidayInfo = {
-  date: string;
-  name: string;
-};
-
-const formattedDate = (date: Date) =>
-  // 1st param 'undefined' to use current locale
-  date.toLocaleDateString(undefined, { month: "long", day: "numeric" });
-
-const daysUntil = (date: Date) => {
-  const today = new Date();
-  const millisecondDiff = date.getTime() - today.getTime();
-  const dayDiff = Math.ceil(millisecondDiff / (1000 * 60 * 60 * 24));
-  return dayDiff >= 0 ? dayDiff : NaN;
-};
-
-const positiveDaysUntil = (date: Date) => {
-  const days = daysUntil(date);
-  return `${days >= 0 ? days : ""}`;
-};
-
-const isWeekendStr = (date: Date) =>
-  // weekend assumed to be Sat/Sun only
-  date.getDay() < 6 ? "No" : "Yes";
+import { buildCsvRow } from "./csv";
+import { HolidayInfo, getHolidays } from "./pub-hols-api";
 
 export const main = async () => {
-  const data = (await getHolidays()) as HolidayInfo[];
+  const countryCode =
+    process.argv.length === 3 ? process.argv[2].toUpperCase() : "AT";
 
-  console.dir(data, { depth: null });
+  let holidays: HolidayInfo[] = [];
 
-  const csv = data
+  try {
+    holidays = await getHolidays(countryCode);
+  } catch (error) {
+    console.warn((error as Error)?.message);
+    console.info("See README.md for supported country codes");
+  }
+
+  const csv = holidays
     .map(({ date, name }) => ({ name, date: new Date(date) }))
-    .map(
-      ({ date, name }) =>
-        `${name}, ${formattedDate(date)}, ${positiveDaysUntil(
-          date
-        )}, ${isWeekendStr(date)}`
-    )
+    .map((holiday) => buildCsvRow(holiday))
     .join("\n");
 
   writeFile("holidays.csv", csv);
