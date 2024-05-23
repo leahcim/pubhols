@@ -11,6 +11,7 @@ const daysUntil = (date: Date) => {
 
 export const positiveDaysUntil = (date: Date) => {
   const days = daysUntil(date);
+  // "0 days until" case included
   return `${days >= 0 ? days : ""}`;
 };
 
