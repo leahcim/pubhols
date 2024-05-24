@@ -5,8 +5,7 @@ export const formattedDate = (date: Date) =>
 const daysUntil = (date: Date) => {
   const today = new Date();
   const millisecondDiff = date.getTime() - today.getTime();
-  const dayDiff = Math.ceil(millisecondDiff / (1000 * 60 * 60 * 24));
-  return dayDiff >= 0 ? dayDiff : NaN;
+  return Math.ceil(millisecondDiff / (1000 * 60 * 60 * 24));
 };
 
 export const positiveDaysUntil = (date: Date) => {
