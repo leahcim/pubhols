@@ -1,3 +1,8 @@
+## Installation
+`cd pubhols`
+
+`npm install`
+
 ## Running the program
 
 Run with `npm run main` for the default country code AT (Austria).
